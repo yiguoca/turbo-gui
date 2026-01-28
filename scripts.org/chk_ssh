@@ -1,0 +1,13 @@
+    cat list.${1} | egrep -v "^ *#|^ *$" | while read host; do
+        printf "%-40s" $host;
+        if ping -c 1 -t 2 "$host" &>/dev/null; then
+           /usr/bin/ssh -o StrictHostKeyChecking=no \
+               -o ConnectTimeout=30 \
+               -o BatchMode=yes \
+               $host -n "hostname" 2>/dev/null;
+           if [[ $? -ne 0 ]]; then printf "%-40s%-10s\n" " " "ssh failed"; fi
+        else
+           printf "%-40s%-10s\n" " " "ping failed"
+        fi
+ 
+    done 

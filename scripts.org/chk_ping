@@ -1,0 +1,9 @@
+    cat list.${1} | egrep -v "^ *#|^ *$" | while read host; do
+        printf "%-40s" $host;
+        if ping -c 1 -t 2 "$host" &>/dev/null; then
+           printf "%-40s%s\n" " " "ping OK"
+        else
+           printf "%-40s%-10s\n" " " "ping failed"
+        fi
+
+    done

@@ -1,0 +1,75 @@
+#!/bin/bash
+
+./get_resize_all | perl -lne '
+  BEGIN {
+    $/ = "";              # paragraph mode
+    @rows = ();
+    @width = ();
+  }
+
+  my ($host, $cpu_cur, $cpu_new, $mem_cur, $mem_new) = ("", "N/A", "N/A", "N/A", "N/A");
+
+  for my $line (split /\n/) {
+    if ($line =~ /(.+?)\s*\.\.\./) {
+      $host = $1;
+    } elsif ($line =~ /CPU:\s+([\d\.]+)\s+([\d\.]+)/) {
+      ($cpu_cur, $cpu_new) = ($1, $2);
+    } elsif ($line =~ /Mem:\s+([\d\.]+)\s+([\d\.]+)/) {
+      ($mem_cur, $mem_new) = ($1, $2);
+    }
+  }
+
+  if ($. == 1) {
+    @header = (
+      "Host Name",
+      "vCPU (Current)",
+      "vCPU (Target)",
+      "Memory (Current GB)",
+      "Memory (Target GB)"
+    );
+    push @rows, \@header;
+    print join("\t", @header);
+  }
+
+  my @row = ($host, $cpu_cur, $cpu_new, $mem_cur, $mem_new);
+  push @rows, \@row;
+
+  # Original TSV output
+  print join("\t", @row);
+
+  END {
+    # Calculate column widths
+    for my $r (@rows) {
+      for my $i (0 .. $#$r) {
+        my $len = length($r->[$i]);
+        $width[$i] = $len if !defined $width[$i] || $len > $width[$i];
+      }
+    }
+
+    my $mdfile = "table.md";
+    open my $md, ">", $mdfile or die "Cannot write $mdfile: $!";
+
+    # Header
+    print $md "| " .
+      join(" | ", map { sprintf("%-*s", $width[$_], $rows[0]->[$_]) } 0 .. $#width)
+      . " |";
+
+    # Separator
+    print $md "| " .
+      join(" | ", map { "-" x $width[$_] } 0 .. $#width)
+      . " |";
+
+    # Data rows
+    for my $r (1 .. $#rows) {
+      print $md "| " .
+        join(" | ", map { sprintf("%-*s", $width[$_], $rows[$r]->[$_]) } 0 .. $#width)
+        . " |";
+    }
+
+    close $md;
+
+    # Print a blank line before the status
+    print STDERR "\nMarkdown table saved as $mdfile\n";
+  }
+'
+

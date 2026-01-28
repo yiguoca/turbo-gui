@@ -1,0 +1,45 @@
+#!/bin/bash
+##--------------------------------------------------------------
+## retrive the RESIZE Action of CPU and Memory of a VM from Turbonomic
+##
+## the script go through the uuid from file centos.vm_uuid.log, 
+## then get the resize action of CPU and Memory
+##
+## before run this script, you need to get the login cookie from turbonomic first by:
+## $ curl -k -c cookie.txt -v -X POST "https://turbonomic.autodatacorp.org/api/v3/login" -d "username=yi.guo.admin&password=XXXXXXX"
+##--------------------------------------------------------------
+
+COOKIE_FILE="cookie.txt"
+
+f_get_resize_detail () {
+    local VM_UUID=$1
+    local URL="https://turbonomic.autodatacorp.org/api/v3/entities/${VM_UUID}/actions"
+
+    curl -k -s -b "$COOKIE_FILE" "$URL" | jq -r '
+      .[] |
+      if .actionType == "RESIZE" then
+        # Create a lowercase version of the details string for matching
+        (.details | ascii_downcase) as $details_lower |
+        if $details_lower | test("vcpu") then
+          "CPU: \(.currentValue | tonumber | floor) \(.newValue | tonumber | floor)"
+        elif $details_lower | test("vmem") then
+          "Mem: \((.currentValue | tonumber) / 1024 / 1024) \((.newValue | tonumber) / 1024 / 1024)"
+        else
+          empty
+        end
+      else
+        empty
+      end
+    '
+}
+
+# --- Main ---
+while read -r host uuid; do
+    echo "$host ...";
+    f_get_resize_detail "$uuid" |while read item current new; do
+       printf "%-30s%-8s%-8s\n" $item $current $new
+    done
+    echo;
+done < <(awk '{print $1, $6}' centos.vm_uuid.log)
+
+exit
