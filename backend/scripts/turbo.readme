@@ -1,0 +1,33 @@
+
+1. setup env
+$ . ./backend/config/endpoints.sh
+$ . ./backend/config/env.sh
+
+2. refresh cookie
+chk_cookie.sh
+
+3. collect all VM info from Turbonomic (vms_raw.json), also generate all VMs hostlist (list.allvms)
+get_all_vms.sh
+
+4. generate host lists for all the env (list.${env}.hosts)
+get_hostlist.sh
+
+5. check ping, generate pingable list: list.${env}.ping
+chk_ping.sh <env>
+
+6. check ssh, generate sshable list: list.${env}.ssh
+chk_ssh.sh <env>
+
+7. generate host list with ostype: list.${env}.os, 
+                  and centos list: list.${env}.centos
+chk_os.sh <env>
+
+8. generate list with uuid info (list.${env}.centos.uuids)
+get_uuid.sh <env>
+
+9. (no need to run. will be invoked by mk_mdtable.sh)
+   fetch resize info for servers in list.${env}.${OStype}.uuids
+   fetch_resize_info.sh <env>
+
+10. generate final md table: table.${env}.${ostype}md
+mk_mdtable.sh <env>

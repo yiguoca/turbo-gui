@@ -1,0 +1,68 @@
+head	1.1;
+access;
+symbols;
+locks
+	yi.guo:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2026.01.28.23.58.48;	author yi.guo;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@*** empty log message ***
+@
+text
+@#!/bin/bash
+##------------------------------
+## generate CPP server list in list.{env}.hosts
+## from backend/data/list.allvms
+##------------------------------
+
+hostname pattern: ****-****-****
+
+env	pattern
+dev	****-d*cp-x***
+pp      ****-ppcp-x***
+prod	****-prcp-x***
+q1 	****-qacp-x*** or ****-q1cp-x***
+q2      ****-q2cp-x***
+st      ****-stcp-x***
+test    ****-tecp-x***
+uat	****-u1cp-x***
+
+linux   ****-****-x***
+cpp     ****-**cp-x***
+
+-------------------------------------------------------------
+input file: $BACKEND_DIR/data/list.allvms
+$ cat $BACKEND_DIR/data/list.allvms |grep -i "cp-x" |head -3
+Dev - LNOC-D5CP-XCA101 (Ub) 75754650728085
+Dev - LNOC-D5CP-XCA202 (Ub) 75754660300194
+Dev - LNOC-D5CP-XCA303 (Ub) 75754660300195
+
+in this file, the VM name could be upper or lower case. 
+
+the 1-4 columns is the VM name. the hostname is the 3rd column but in lower case. 
+for example, the 1st one above, the hostname is lnoc-d5cp-xca101
+the hostname consist of 3 section. 1st and 2nd sections are 4 characters/numbers. the 3rd section could be 4-5 characters/numbers.
+-------------------------------------------------------------
+
+task of the script:
+for each env, generate a list of the hostnames. filename: list.{env}.hosts
+example: 
+$ head -3 list.uat.hosts
+fnoc-u1cp-xca101
+fnoc-u1cp-xca102
+fnoc-u1cp-xca103
+
+-------------------------------------------------------------
+@

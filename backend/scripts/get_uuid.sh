@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+##-----------------------------------------------------------
+## Generate  uuid host list for servers in centos list
+## 
+## Usage: $0 <env>
+## the <env> could be one of dev, pp, prod, q1, q2, st, test, uat
+## input file1: $BACKEND_DIR/data/list.${env}.centos
+## input file2: $BACKEND_DIR/data/list.allvms
+## output file: $BACKEND_DIR/data/list.${env}.${OStype}.uuids
+##------------------------------------------------------------
+
+f_prt_usage () {
+  echo "Usage: $pgm <env>"
+  echo "       <env> is one of  dev, pp, prod, q1, q2, st, test, uat"
+  echo "Example: $pgm dev"
+  exit 1
+}
+##-----------------------------
+# Main
+# ------------------------------
+pgm=${0##*/}
+[[ $# -lt 1 ]] && f_prt_usage
+env=$1
+ostype="centos"
+
+INPUT_FILE=$BACKEND_DIR/data/list.${env}.centos
+if [ ! -s "$INPUT_FILE" ]; then
+   echo "$INPUT_FILE not exist or empty!"
+   exit 1
+fi
+
+INPUT_FILE2=$BACKEND_DIR/data/list.allvms
+if [ ! -s "$INPUT_FILE2" ]; then
+   echo "$INPUT_FILE2 not exist or empty!"
+   exit 1
+fi
+
+OUTPUT_FILE=$BACKEND_DIR/data/list.${env}.$ostype.uuids
+> $OUTPUT_FILE
+
+cat $INPUT_FILE| while read host; do printf "$host    "; cat $INPUT_FILE2  |grep -iw $host; done > $OUTPUT_FILE
+
+echo "uuids saved in $OUTPUT_FILE"
+

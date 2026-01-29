@@ -1,0 +1,30 @@
+LOGIN_URL="${TURBO_URL}${LOGIN_ENDPOINT}"
+TEST_URL="${TURBO_URL}/api/v3/search?types=VirtualMachine&limit=1"
+COOKIE_FILE="$BACKEND_DIR/data/cookie.txt"
+
+printf "Logging cookie test into Turbonomic .... "
+
+PAYLOAD="$(cat "$CREDS_FILE")"
+
+test_cookie_cmd='curl -k -s -o /dev/null -w "%{http_code}\n" -b $COOKIE_FILE "$TEST_URL"'
+create_cookie_cmd='curl -k -s -S -c $COOKIE_FILE -X POST "$LOGIN_URL" -d "$PAYLOAD" -o /dev/null'
+
+test_cookie_code=$(eval $test_cookie_cmd)
+
+if [[ "$test_cookie_code" != "200" ]]; then
+##  echo "[ERROR] cookie failed with code $test_cookie_code"
+  eval $create_cookie_cmd
+
+  test_cookie_code=$(eval $test_cookie_cmd)
+  if [[ "$test_cookie_code" != "200" ]]; then
+     echo "[ERROR] creating new cookie failed!"  
+     exit 1
+  fi
+fi
+echo "successful!"
+
+
+
+
+
+

@@ -1,0 +1,13 @@
+HTTP/2 401 
+server: nginx
+date: Wed, 28 Jan 2026 15:03:19 GMT
+content-type: text/html;charset=iso-8859-1
+content-length: 565
+set-cookie: JSESSIONID=node015hnn004c99n1lbqqhpg33bo11720.node0; Path=/; HTTPOnly; Secure
+x-content-type-options: nosniff
+x-xss-protection: 1; mode=block
+cache-control: must-revalidate,no-cache,no-store
+strict-transport-security: max-age=63072000; includeSubDomains
+x-frame-options: SAMEORIGIN
+x-turbo-upstream: API
+

@@ -1,4 +1,27 @@
-#!/usr/bin/env bash
+head	1.1;
+access;
+symbols;
+locks
+	yi.guo:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2026.01.29.22.37.39;	author yi.guo;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@*** empty log message ***
+@
+text
+@#!/usr/bin/env bash
 set -euo pipefail
 
 LOGIN_URL="${TURBO_URL}${LOGIN_ENDPOINT}"
@@ -28,3 +51,4 @@ grep -qi JSESSIONID "$COOKIE_FILE" || {
 }
 
 echo "[INFO] Login successful, cookie generated"
+@
