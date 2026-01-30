@@ -1,0 +1,24 @@
+#!/bin/bash
+##-----------------------------------------------
+## get resize action of a uuid
+## "Usage: $0 <vm_uuid>"
+##-----------------------------------------------
+
+# Check if a UUID was provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <vm_uuid>"
+  exit 1
+fi
+
+VM_UUID=$1
+COOKIE_FILE="cookie.txt"
+URL="https://turbonomic.autodatacorp.org/api/v3/entities/${VM_UUID}/actions"
+
+curl -k -s -b "$COOKIE_FILE" "$URL" | jq -r --arg VM_UUID "$VM_UUID" '
+  .[] | 
+  if .actionType == "RESIZE" then 
+    "\($VM_UUID) | \(.actionType) | \(.details)"
+  else 
+    empty 
+  end
+'

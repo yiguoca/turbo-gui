@@ -14,7 +14,7 @@ COOKIE_FILE="$BACKEND_DIR/data/cookie.txt"
 BASE_URL="${TURBO_URL}${VMS_ENDPOINT}?types=VirtualMachine&limit=500"
 
 OUTPUT_FILE="$BACKEND_DIR/data/vms_raw.json"
-TEMP_HEADER_FILE="response_headers.txt"
+TEMP_HEADER_FILE="$BACKEND_DIR/log/response_headers.txt"
 LIST_ALLVMS_FILE="$BACKEND_DIR/data/list.allvms"
 
 # --- Start Fresh ---
